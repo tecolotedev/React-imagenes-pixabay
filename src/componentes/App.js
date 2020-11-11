@@ -1,52 +1,51 @@
-import React,{Component} from 'react';
-import Buscador from './Buscador.jsx';
-import Imagenes from './Imagenes.jsx';
+import React,{useState} from 'react';
+import Buscador from './Buscador/Buscador.jsx';
+import Imagenes from './Imagenes/Imagenes.jsx';
 import axios from 'axios';
 import scrollToElement from 'scroll-to-element';
 
 
-class App extends Component{
-  state={
-    imagenes:[],
-    query:'',
-    pagina:''
-  }
-  getImagenes=query=>{
+const App =() => {
+  const [imagenes, setImagenes] = useState([]);
+  const [query, setQuery] = useState('');
+  let [pagina, setPagina] = useState(1);
+  
+  const getImagenes = async (query) =>{
     const url =`https://pixabay.com/api/?key=12385005-999bb56a24d994fe930346e99&q=${query}&image_type=all&page=${1}&lang=es`;
-    axios.get(url)
-                .then(res=> this.setState({imagenes:res.data.hits, query,pagina:1}))
-                .catch(error=>console.log(error));
+    let res = await axios.get(url)
+    setImagenes(res.data.hits);
+    setQuery(query);
   }
-  cambiarPagina=paginaN=>{
-    let {query,pagina}=this.state;
+  const cambiarPagina = async (paginaN) => {
+    
     pagina=pagina+paginaN;
     if(pagina<1)return null;
-    
     const url =`https://pixabay.com/api/?key=12385005-999bb56a24d994fe930346e99&q=${query}&image_type=all&page=${pagina}&lang=es`;
-    axios.get(url)
-                .then(res=> this.setState({imagenes:res.data.hits, query,pagina}))
-                .catch(error=>console.log(error));
+    let res = await axios.get(url);
     
+    setImagenes(res.data.hits);
+    setPagina(pagina);
+
     scrollToElement('#app', {
       offset: 0,
       ease: 'linear',
-      duration: 1500
+      duration: 500
     });
   }
-  render(){
-    return (
-      <div className="App" id="app">
-        <Buscador 
-          getImagenes={this.getImagenes}
+
+  return (
+    <div className="App" id="app">
+      <Buscador 
+        getImagenes={getImagenes}
+      />
+      <Imagenes
+        imagenes={imagenes} 
+        query={query}
+        cambiarPagina={cambiarPagina}
         />
-        <Imagenes
-          imagenes={this.state.imagenes} 
-          query={this.state.query}
-          cambiarPagina={this.cambiarPagina}
-          />
-      </div> 
-    );
-  }
+    </div> 
+  );
+  
 }
 
 export default App;

@@ -1,6 +1,6 @@
 import React,{Component} from 'react';
-import Imagen from './Imagen.jsx';
-import Paginacion from './Paginacion';
+import Imagen from '../Imagen/Imagen.jsx';
+import Paginacion from '../Paginacion/Paginacion';
 class Imagenes extends Component{
 
     
